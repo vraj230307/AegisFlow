@@ -10,8 +10,8 @@ import DataInspector from './components/DataInspector';
 import ApiKeyModal from './components/ApiKeyModal';
 import { PipelineWSClient } from './services/websocket';
 
-const BACKEND_BASE = "http://127.0.0.1:8000";
-const WS_URL = "ws://127.0.0.1:8000/ws/pipeline";
+const BACKEND_BASE = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+const WS_URL = import.meta.env.VITE_WS_URL || (BACKEND_BASE.replace(/^http/, 'ws') + "/ws/pipeline");
 
 export default function App() {
   const [isConnected, setIsConnected] = useState(false);
