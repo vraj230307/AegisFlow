@@ -1,0 +1,29 @@
+# Environments & Dependencies
+venv/
+.venv/
+env/
+node_modules/
+dist/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+*.db
+market_data.db
+.pytest_cache/
+
+# Secrets & Environment variables
+.env
+*.env.local
+
+# IDE & Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
