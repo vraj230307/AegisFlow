@@ -1,7 +1,8 @@
 # AegisFlow | Autonomous Agentic Self-Healing Data Pipeline
 > **Hackathon Submission**: HACK-O-OCTO 4.0 — **Problem Statement 01 (PS01)**  
 > **Track**: AI Agents, Cloud, APIs, and Resilient Systems  
-> **Core AI**: Google Gemini 2.5 Flash (`gemini-2.5-flash`)
+> **Core AI**: Google Gemini 2.5 Flash (`gemini-2.5-flash`)  
+> **Live WebApp**: [https://aegisflow-ps01.web.app](https://aegisflow-ps01.web.app)
 
 ---
 
@@ -123,6 +124,14 @@ npm run dev
   ```
 - Or enter it directly in the UI dashboard via the **API Key** button.
 - *Note*: If no key is provided, AegisFlow runs with its built-in resilient algorithmic fallback healer to guarantee 100% demo continuity even without internet!
+ 
+### 4. Automated Feature-Walkthrough Recording (Playwright)
+Run the automated end-to-end judge walkthrough across all scenarios to record high-resolution 1080p demo video:
+```powershell
+python record_walkthrough.py
+```
+- Automatically drives Clean Baseline $\to$ Schema Drift $\to$ Corrupt Timestamps $\to$ Metrics Telemetry.
+- Saves `AegisFlow_Demo.webm` directly to `%USERPROFILE%\Downloads`.
 
 ---
 

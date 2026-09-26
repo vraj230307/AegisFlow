@@ -1,0 +1,412 @@
+[
+  {
+    "id": "TC-01",
+    "name": "Combined Renamed Field + Corrupt Epoch Timestamp",
+    "dimension": "Two failure types in SAME payload (renamed field + corrupt timestamp)",
+    "payload_sample": [
+      {
+        "tx_id": "TX-COMB-101",
+        "user_id": "USR-101",
+        "gross_amount": 1250.0,
+        "currency": "USD",
+        "timestamp": 1790336893000,
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_cleanse (resolve_key_aliases): KeyError: \"Missing required canonical field '",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 1,
+    "data_correct": "Yes",
+    "final_outcome": "FALLBACK_USED",
+    "hand_check_details": "Row verified: tx_id=TX-COMB-101, amount=$1250.0, ts=2026-09-25T11:48:13Z",
+    "mttr_ms": 7007.66
+  },
+  {
+    "id": "TC-02",
+    "name": "Zero-Semantic Obscure Key Renaming ('val_7')",
+    "dimension": "No obvious semantic similarity (amount->val_7, tx_id->k_99, user_id->u_alpha)",
+    "payload_sample": [
+      {
+        "k_99": "TX-OBSC-202",
+        "u_alpha": "USR-102",
+        "val_7": 450.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_cleanse (resolve_key_aliases): KeyError: \"Missing required canonical field '",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 1,
+    "data_correct": "No",
+    "final_outcome": "HEALED_BUT_WRONG_DATA",
+    "hand_check_details": "Zero-semantic renaming failed: amount=0.0",
+    "mttr_ms": 6853.84
+  },
+  {
+    "id": "TC-03",
+    "name": "New Data Type Mutation (Nested Object Amount)",
+    "dimension": "Amount as nested object {'value': 850.25, 'currency': 'USD'}",
+    "payload_sample": [
+      {
+        "tx_id": "TX-NEST-303",
+        "user_id": "USR-103",
+        "amount": {
+          "value": 850.25,
+          "currency": "USD"
+        },
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_cleanse (coerce_amount): TypeError: Type violation on amount: expected",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 1,
+    "data_correct": "No",
+    "final_outcome": "HEALED_BUT_WRONG_DATA",
+    "hand_check_details": "Nested amount failed: amount=0.0 (expected 850.25)",
+    "mttr_ms": 4365.46
+  },
+  {
+    "id": "TC-04",
+    "name": "Deep 5-Level Nested Envelope",
+    "dimension": "Envelope nesting 5 levels deep (meta.api_version.gateway.feed.records)",
+    "payload_sample": {
+      "meta": {
+        "api_version": "v3",
+        "gateway": {
+          "feed": {
+            "records": [
+              {
+                "tx_id": "TX-DEEP-404",
+                "user_id": "USR-104",
+                "amount": 320.0,
+                "currency": "USD",
+                "timestamp": "2026-09-25T16:00:00Z",
+                "status": "completed"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "node_exception": "node_cleanse (unwrap_envelope): TypeError: Invalid API response structure: Ex",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 1,
+    "data_correct": "No",
+    "final_outcome": "HEALED_BUT_WRONG_DATA",
+    "hand_check_details": "Deep unwrapping failed: rows=[('TX-FALLBACK', 'USR-ANON', 0.0, 0.0, 0.0, 'USD', '2026-09-25T16:00:00Z')]",
+    "mttr_ms": 4313.49
+  },
+  {
+    "id": "TC-05",
+    "name": "Sibling Property Shadowing & Conflicting Fields",
+    "dimension": "Field present but unexpected extra property alongside it (amount is None, original_amount=990.0)",
+    "payload_sample": [
+      {
+        "tx_id": "TX-SIBL-505",
+        "user_id": "USR-105",
+        "amount": null,
+        "original_amount": 990.0,
+        "amount_override": 1200.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_cleanse (coerce_amount): TypeError: Type violation on amount: expected",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 1,
+    "data_correct": "No",
+    "final_outcome": "HEALED_BUT_WRONG_DATA",
+    "hand_check_details": "Sibling extraction failed: amount=0.0",
+    "mttr_ms": 3703.37
+  },
+  {
+    "id": "TC-06",
+    "name": "Inconsistent Heterogeneous Schemas in Same Batch",
+    "dimension": "Array where records have inconsistent schemas from each other in same batch",
+    "payload_sample": [
+      {
+        "tx_id": "TX-HET-601",
+        "user_id": "USR-106A",
+        "amount": 100.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "reference_id": "TX-HET-602",
+        "client_id": "USR-106B",
+        "gross_amount": 200.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-HET-603",
+        "user_id": "USR-106C",
+        "amount": 300.0,
+        "currency": "USD",
+        "timestamp": 1758816000000,
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_cleanse (resolve_key_aliases): KeyError: \"Missing required canonical field '",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 3,
+    "data_correct": "Yes",
+    "final_outcome": "FALLBACK_USED",
+    "hand_check_details": "All 3 heterogeneous rows healed & loaded: amounts=[100.0, 200.0, 300.0]",
+    "mttr_ms": 6437.04
+  },
+  {
+    "id": "TC-07",
+    "name": "Valid JSON but Semantically Nonsensical",
+    "dimension": "All required fields present, but negative amount (-2500.0) & currency 'XYZ123'",
+    "payload_sample": [
+      {
+        "tx_id": "TX-NONS-707",
+        "user_id": "USR-107",
+        "amount": -2500.0,
+        "currency": "XYZ123",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_enrich (EnrichError: invalid amount / math)",
+    "gemini_called": false,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "N/A",
+    "sandbox_passed": "N/A",
+    "heal_source": null,
+    "rows_loaded": 0,
+    "data_correct": "Yes",
+    "final_outcome": "FAIL_SAFE_TRIGGERED",
+    "hand_check_details": "Guardrail correctly triggered: negative amount stopped at enrich node.",
+    "mttr_ms": 0.0
+  },
+  {
+    "id": "TC-08",
+    "name": "Completely Empty Array Payload",
+    "dimension": "Empty array [] returned by upstream",
+    "payload_sample": [],
+    "node_exception": "None",
+    "gemini_called": false,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "N/A",
+    "sandbox_passed": "N/A",
+    "heal_source": null,
+    "rows_loaded": 0,
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "hand_check_details": "Empty payload handled gracefully: 0 rows loaded without exception.",
+    "mttr_ms": 0.0
+  },
+  {
+    "id": "TC-09",
+    "name": "Duplicate Primary Key tx_id Collision in Same Batch",
+    "dimension": "Duplicate tx_id 'TX-DUP-999' within the same batch",
+    "payload_sample": [
+      {
+        "tx_id": "TX-DUP-999",
+        "user_id": "USR-109A",
+        "amount": 500.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-DUP-999",
+        "user_id": "USR-109B",
+        "amount": 750.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_verify (VerificationResult invariants failed)",
+    "gemini_called": false,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "N/A",
+    "sandbox_passed": "N/A",
+    "heal_source": null,
+    "rows_loaded": 0,
+    "data_correct": "Yes",
+    "final_outcome": "FAIL_SAFE_TRIGGERED",
+    "hand_check_details": "Guardrail correctly triggered: duplicate primary key stopped at verify node.",
+    "mttr_ms": 0.0
+  },
+  {
+    "id": "TC-10",
+    "name": "Natural Language Relative Timestamp",
+    "dimension": "Timestamp format not covered by existing fixture ('two days ago')",
+    "payload_sample": [
+      {
+        "tx_id": "TX-TIME-1010",
+        "user_id": "USR-110",
+        "amount": 420.0,
+        "currency": "USD",
+        "timestamp": "two days ago",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_cleanse (normalize_timestamp): ValueError: Timestamp invariant violation: ex",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 1,
+    "data_correct": "Yes",
+    "final_outcome": "FALLBACK_USED",
+    "hand_check_details": "Timestamp normalized to ISO 8601: 2026-09-25T16:00:00Z",
+    "mttr_ms": 4834.03
+  },
+  {
+    "id": "TC-11",
+    "name": "Sequential Back-to-Back Failures (Cross-Patch Interference)",
+    "dimension": "Two novel failures back to back in sequence without patch reset",
+    "payload_sample": [
+      {
+        "tx_id": "TX-SEQ-1111",
+        "user_id": "USR-111",
+        "amount": {
+          "val": 600.0
+        },
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "node_cleanse (coerce_amount): TypeError: Type violation on amount: expected",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 1,
+    "data_correct": "No",
+    "final_outcome": "HEALED_BUT_WRONG_DATA",
+    "hand_check_details": "Sequential failure: amount=0.0 (expected 600.0)",
+    "mttr_ms": 3940.7
+  },
+  {
+    "id": "TC-12",
+    "name": "Nested Array Type for String user_id Identifier",
+    "dimension": "Field right name but wrong type (user_id as ['USR-CORP-1', 'DEPT-FINANCE'])",
+    "payload_sample": [
+      {
+        "tx_id": "TX-ARR-1212",
+        "user_id": [
+          "USR-CORP-1",
+          "DEPT-FINANCE"
+        ],
+        "amount": 310.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "None",
+    "gemini_called": false,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "N/A",
+    "sandbox_passed": "N/A",
+    "heal_source": null,
+    "rows_loaded": 1,
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "hand_check_details": "Array client_id handled cleanly: client_id='['USR-CORP-1', 'DEPT-FINANCE']', amount=$310.0",
+    "mttr_ms": 0.0
+  },
+  {
+    "id": "TC-13",
+    "name": "Numeric ISO 4217 Currency Code (840 for USD)",
+    "dimension": "Currency code provided as numeric integer 840 instead of string 'USD'",
+    "payload_sample": [
+      {
+        "tx_id": "TX-ISO-1313",
+        "user_id": "USR-113",
+        "amount": 150.0,
+        "currency": 840,
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_exception": "None",
+    "gemini_called": false,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "N/A",
+    "sandbox_passed": "N/A",
+    "heal_source": null,
+    "rows_loaded": 1,
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "hand_check_details": "Numeric currency handled cleanly: currency='840', amount=$150.0",
+    "mttr_ms": 0.0
+  },
+  {
+    "id": "TC-14",
+    "name": "Corrupt Upstream Gateway HTML/Text String",
+    "dimension": "Payload is raw HTML 502 Bad Gateway string instead of JSON array/dict",
+    "payload_sample": "<html><head><title>502 Bad Gateway</title></head><body><h1>Bad Gateway</h1></bod",
+    "node_exception": "node_extract (ExtractError: HTTP / Parse failure)",
+    "gemini_called": false,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "N/A",
+    "sandbox_passed": "N/A",
+    "heal_source": null,
+    "rows_loaded": 0,
+    "data_correct": "Yes",
+    "final_outcome": "FAIL_SAFE_TRIGGERED",
+    "hand_check_details": "Guardrail correctly triggered: corrupt HTML safely rejected after retry cap.",
+    "mttr_ms": 0.0
+  },
+  {
+    "id": "TC-15",
+    "name": "Extreme Missing Keys (Only tx_id Present)",
+    "dimension": "Only tx_id present; amount, user_id, currency, timestamp, status missing",
+    "payload_sample": [
+      {
+        "tx_id": "TX-BARE-1515"
+      }
+    ],
+    "node_exception": "node_cleanse (resolve_key_aliases): KeyError: \"Missing required canonical field '",
+    "gemini_called": true,
+    "gemini_diagnosis": "N/A",
+    "diagnosis_correct": "No (Gemini failed/retried)",
+    "sandbox_passed": "Rejected",
+    "heal_source": "fallback",
+    "rows_loaded": 1,
+    "data_correct": "No",
+    "final_outcome": "HEALED_BUT_WRONG_DATA",
+    "hand_check_details": "Healed via fallback defaults: synthetic amount=0.0, guest user.",
+    "mttr_ms": 6010.19
+  }
+]
