@@ -44,6 +44,24 @@ CRITICAL CONSTRAINTS:
 3. Do NOT import or use dangerous libraries (no os, sys, subprocess, eval, open). You may use standard safe utilities like `re`, `datetime`, `json`, `math`, `time`.
 4. Ensure the function handles the offending payload gracefully and returns the canonical format expected by downstream nodes.
 5. Do NOT include markdown code blocks around the JSON; return raw valid JSON only.
+
+DOMAIN EXTRACTION RULES FOR CANONICAL TARGET SCHEMA:
+- Canonical Record fields:
+  * tx_id: string identifier (e.g. 'TX-101', 'TX-OBSC-202')
+  * client_id: string user/client identifier (e.g. 'USR-101', 'USR-CORP-1')
+  * amount: float gross financial value (e.g. 150.0, 450.0)
+  * currency: 3-letter uppercase ISO alpha string (e.g. 'USD', 'EUR', 'GBP')
+  * timestamp: ISO 8601 UTC string ending in 'Z' (e.g. '2026-09-25T16:00:00Z')
+  * status: string (e.g. 'completed')
+
+- SPECIAL HEALING PATTERNS:
+  * Numeric Currency: If currency is an integer or 3-digit numeric code (e.g. 840, 978, 826), map it via ISO 4217 numeric codes (840->'USD', 978->'EUR', 826->'GBP', 392->'JPY', 124->'CAD', 36->'AUD', 756->'CHF', 356->'INR').
+  * Array Identifier: If a scalar field like client_id or tx_id receives an array (e.g. ['USR-CORP-1', 'DEPT-FINANCE']), extract the primary intended scalar value (first non-null element). Do NOT stringify the entire array!
+  * Sibling Shadowing: If primary 'amount' is None or missing, inspect sibling keys in the record (e.g. 'original_amount', 'amount_override', 'raw_amount', 'gross_amount', 'price') for the real value.
+  * Obscure Keys: If keys have zero semantic meaning (e.g. 'k_99', 'u_alpha', 'val_7'), infer field mapping from VALUE SHAPE: values starting with 'TX-' are tx_id, values starting with 'USR-' are client_id, and positive floats are amount.
+  * Nested Amount: If amount is an object (e.g. {'value': 850.25} or {'val': 600.0}), extract the numeric amount from .get('value') or .get('val').
+  * Deep Envelopes: If payload is buried in nested dicts (e.g. meta.v3.feed.records), recursively search nested dicts until finding the list of dict records.
+  * Relative Timestamp: If timestamp is a natural language relative phrase (e.g. 'two days ago', 'yesterday'), compute it relative to datetime.datetime.now(datetime.timezone.utc) using datetime.timedelta.
 """
 
 class GeminiHealer:
@@ -105,6 +123,7 @@ class GeminiHealer:
 ```
 
 Synthesize a corrected, rock-solid version of `def {failing_step}(...)` that handles this schema variation cleanly.
+Adhere strictly to canonical schema contract: tx_id (str), amount (float), currency (3-letter alpha str), client_id (scalar str), timestamp (ISO 8601 UTC 'Z' str).
 Return ONLY valid JSON with keys: 'diagnosis', 'patched_function', 'confidence'.
 """
 

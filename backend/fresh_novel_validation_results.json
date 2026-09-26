@@ -1,0 +1,258 @@
+[
+  {
+    "id": "TC-16",
+    "name": "Three-Way Combined Failure (Rename + Numeric Currency + Nested Array User)",
+    "dimension": "gross_amount + currency: 978 (EUR) + user_id: ['USR-CORP-9', 'SUBSIDIARY-EU']",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "diagnosis_correct": "Yes",
+    "sandbox_passed": "Yes (Cached)",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-3WAY-1616",
+        "USR-CORP-9",
+        1450.0,
+        261.0,
+        1711.0,
+        "EUR",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "All 3 mutations healed: client=USR-CORP-9, amt=$1450.0, curr=EUR"
+  },
+  {
+    "id": "TC-17",
+    "name": "Mixed Batch (80% Clean, 20% Novel Drifted Record)",
+    "dimension": "Batch of 5 records: records 0,1,2,4 clean, record 3 has trade_amount & client_ref",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "diagnosis_correct": "Yes",
+    "sandbox_passed": "Yes (Cached)",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 5,
+    "row_data": [
+      [
+        "TX-MIX-01",
+        "USR-201",
+        100.0,
+        18.0,
+        118.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-MIX-02",
+        "USR-202",
+        200.0,
+        36.0,
+        236.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-MIX-03",
+        "USR-203",
+        300.0,
+        54.0,
+        354.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-MIX-04",
+        "USR-204",
+        400.0,
+        72.0,
+        472.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-MIX-05",
+        "USR-205",
+        500.0,
+        90.0,
+        590.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "All 5 records cleanly loaded (4 clean + 1 drifted): [100.0, 200.0, 300.0, 400.0, 500.0]"
+  },
+  {
+    "id": "TC-18",
+    "name": "Field with Correct Name but Boolean Value (amount: True)",
+    "dimension": "amount: true (boolean instead of numeric currency float)",
+    "node_exception": "Cleanse (coerce_amount): TypeError: Type violation on amount: boo...",
+    "diagnosis_correct": "Yes",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "FAIL_SAFE_TRIGGERED",
+    "rows_loaded": 0,
+    "row_data": [],
+    "notes": "Guardrail safely caught boolean amount: stopped financial corruption."
+  },
+  {
+    "id": "TC-19",
+    "name": "Currency Given as Full Word ('US Dollars')",
+    "dimension": "currency: 'US Dollars' instead of 3-letter code 'USD'",
+    "node_exception": "None",
+    "diagnosis_correct": "N/A (Clean)",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-WORD-1919",
+        "USR-119",
+        250.0,
+        45.0,
+        295.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Currency 'US Dollars' mapped to canonical 'USD': USD"
+  },
+  {
+    "id": "TC-20",
+    "name": "Timestamp with Timezone Offset ('2026-09-25T10:00:00-05:00')",
+    "dimension": "Timestamp with -05:00 offset; must convert to UTC ending in 'Z' (15:00:00Z)",
+    "node_exception": "None",
+    "diagnosis_correct": "N/A (Clean)",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-OFFSET-2020",
+        "USR-120",
+        180.0,
+        32.4,
+        212.4,
+        "USD",
+        "2026-09-25T15:00:00Z"
+      ]
+    ],
+    "notes": "Offset correctly converted to UTC: 2026-09-25T15:00:00Z"
+  },
+  {
+    "id": "TC-21",
+    "name": "European Formatted Number String ('1.250,99')",
+    "dimension": "amount: '1.250,99' with period thousand separator and comma decimal",
+    "node_exception": "None",
+    "diagnosis_correct": "N/A (Clean)",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-NUMFMT-2121",
+        "USR-121",
+        1250.99,
+        225.18,
+        1476.17,
+        "EUR",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "European number format parsed to float: 1250.99"
+  },
+  {
+    "id": "TC-22",
+    "name": "Swapped Identifiers (tx_id has USR value, user_id has TX value)",
+    "dimension": "tx_id: 'USR-777', user_id: 'TX-SWAP-2222'",
+    "node_exception": "None",
+    "diagnosis_correct": "N/A (Clean)",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-SWAP-2222",
+        "USR-777",
+        550.0,
+        99.0,
+        649.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Swapped identifiers detected by value shape: tx_id=TX-SWAP-2222, client=USR-777"
+  },
+  {
+    "id": "TC-23",
+    "name": "Nested Envelope with Sibling False-Lead Lists",
+    "dimension": "Envelope contains debug_logs, audits, and genuine transactions list alongside",
+    "node_exception": "Cleanse (unwrap_envelope): TypeError: Invalid API response structur...",
+    "diagnosis_correct": "Yes",
+    "sandbox_passed": "Yes (Cached)",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-BRANCH-2323",
+        "USR-123",
+        890.0,
+        160.2,
+        1050.2,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Found correct transaction list among false leads: amount=$890.0"
+  },
+  {
+    "id": "TC-24",
+    "name": "Lone Single Object Payload (No List Wrapper)",
+    "dimension": "Payload is a bare dict {tx_id: ...} instead of a list of dicts [{...}]",
+    "node_exception": "Cleanse (unwrap_envelope): TypeError: Invalid API response structur...",
+    "diagnosis_correct": "Yes",
+    "sandbox_passed": "Yes (Cached)",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-LONE-2424",
+        "USR-124",
+        415.0,
+        74.7,
+        489.7,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Lone dictionary auto-wrapped and cleansed cleanly: amount=$415.0"
+  },
+  {
+    "id": "TC-25",
+    "name": "Sequential Collision (Rename gross_amount immediately after client_ref patch)",
+    "dimension": "Tests patch cache isolation when two different renames occur sequentially",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "diagnosis_correct": "Yes",
+    "sandbox_passed": "Yes (Cached)",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-COLL-2525",
+        "USR-125",
+        775.0,
+        139.5,
+        914.5,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Sequential drift handled without cache collision: amount=$775.0"
+  }
+]

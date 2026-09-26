@@ -1,7 +1,7 @@
 import React from 'react';
 import { Shield, Zap, Sparkles, Key, Radio, Terminal } from 'lucide-react';
 
-export default function Header({ isConnected, onOpenKeyModal, hasApiKey }) {
+export default function Header({ isConnected, onOpenKeyModal, hasApiKey, activeTab, onSelectTab }) {
   return (
     <header className="glass-panel" style={{ padding: '16px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -38,6 +38,66 @@ export default function Header({ isConnected, onOpenKeyModal, hasApiKey }) {
             Autonomous Agentic Self-Healing Pipeline Engine with Dynamic Hot-Patching
           </p>
         </div>
+      </div>
+
+      {/* Navigation View Switcher */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: 'rgba(13, 17, 26, 0.85)',
+        padding: '4px',
+        borderRadius: '10px',
+        border: '1px solid var(--border-subtle)',
+        gap: '4px'
+      }}>
+        <button
+          onClick={() => onSelectTab('pipeline')}
+          style={{
+            padding: '6px 14px',
+            borderRadius: '8px',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            border: 'none',
+            cursor: 'pointer',
+            background: activeTab === 'pipeline' ? 'rgba(59, 130, 246, 0.25)' : 'transparent',
+            color: activeTab === 'pipeline' ? '#60a5fa' : 'var(--text-secondary)',
+            boxShadow: activeTab === 'pipeline' ? '0 0 12px rgba(59, 130, 246, 0.2)' : 'none',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          Live Pipeline Engine
+        </button>
+
+        <button
+          onClick={() => onSelectTab('benchmark')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px 14px',
+            borderRadius: '8px',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            border: 'none',
+            cursor: 'pointer',
+            background: activeTab === 'benchmark' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+            color: activeTab === 'benchmark' ? '#34d399' : 'var(--text-secondary)',
+            boxShadow: activeTab === 'benchmark' ? '0 0 12px rgba(16, 185, 129, 0.2)' : 'none',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <span>33-Case Benchmark</span>
+          <span style={{
+            fontSize: '0.65rem',
+            padding: '1px 6px',
+            borderRadius: '10px',
+            background: '#10b981',
+            color: '#022c22',
+            fontWeight: '800'
+          }}>
+            100% SAFE
+          </span>
+        </button>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

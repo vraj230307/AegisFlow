@@ -7,7 +7,7 @@
     "sandbox_passed": "Yes (Cached/Verified)",
     "data_correct": "Yes",
     "final_outcome": "HEALED_CORRECTLY",
-    "notes": "Autonomously healed via fallback in 15.78ms MTTR."
+    "notes": "Autonomously healed via fallback in 14.45ms MTTR."
   },
   {
     "id": "TC-02",
@@ -17,7 +17,7 @@
     "sandbox_passed": "Yes (Cached/Verified)",
     "data_correct": "Yes",
     "final_outcome": "HEALED_CORRECTLY",
-    "notes": "Autonomously healed via fallback in 10.81ms MTTR."
+    "notes": "Autonomously healed via fallback in 10.19ms MTTR."
   },
   {
     "id": "TC-03",
@@ -37,7 +37,7 @@
     "sandbox_passed": "Yes (Cached/Verified)",
     "data_correct": "Yes",
     "final_outcome": "HEALED_CORRECTLY",
-    "notes": "Autonomously healed via fallback in 8.76ms MTTR."
+    "notes": "Autonomously healed via fallback in 8.75ms MTTR."
   },
   {
     "id": "TC-05",
@@ -47,7 +47,7 @@
     "sandbox_passed": "Yes (Cached/Verified)",
     "data_correct": "Yes",
     "final_outcome": "HEALED_CORRECTLY",
-    "notes": "Autonomously healed via fallback in 10.23ms MTTR."
+    "notes": "Autonomously healed via fallback in 10.22ms MTTR."
   },
   {
     "id": "TC-06",
@@ -57,7 +57,7 @@
     "sandbox_passed": "Yes (Cached/Verified)",
     "data_correct": "Yes",
     "final_outcome": "HEALED_CORRECTLY",
-    "notes": "Autonomously healed via fallback in 10.7ms MTTR."
+    "notes": "Autonomously healed via fallback in 9.99ms MTTR."
   },
   {
     "id": "TC-07",
@@ -97,7 +97,7 @@
     "sandbox_passed": "Yes (Cached/Verified)",
     "data_correct": "Yes",
     "final_outcome": "HEALED_CORRECTLY",
-    "notes": "Autonomously healed via fallback in 8.37ms MTTR."
+    "notes": "Autonomously healed via fallback in 9.12ms MTTR."
   },
   {
     "id": "TC-11",

@@ -144,3 +144,4 @@ python record_walkthrough.py
 
 ## ⚠️ Known Limitation
 Current scope covers schema/type/structural drift in a single pipeline domain; extending to multi-pipeline or multi-agent orchestration is the natural next step.
+

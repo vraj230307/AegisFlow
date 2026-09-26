@@ -1,4 +1,6 @@
 import asyncio
+import os
+import json
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -140,6 +142,77 @@ async def trigger_orchestrator(req: OrchestratorRunRequest):
 def reset_orchestrator():
     orchestrator.reset_patches()
     return {"status": "success", "message": "Orchestrator patches and cache purged."}
+
+# ===========================================================================
+# Benchmark & Invariant Verification Suite Endpoints
+# ===========================================================================
+@app.get("/api/benchmark")
+def get_benchmark_results():
+    import json
+    json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "master_33_validation_results.json")
+    if not os.path.exists(json_path):
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "master_33_validation_results.json")
+    
+    if os.path.exists(json_path):
+        with open(json_path, "r") as f:
+            cases = json.load(f)
+    else:
+        cases = []
+
+    suites = ["Original 15", "Fresh 10", "Cold 8"]
+    summary_by_suite = {}
+    for s in suites:
+        s_cases = [c for c in cases if c.get("suite") == s]
+        healed = sum(1 for c in s_cases if c.get("outcome") == "HEALED_CORRECTLY")
+        failsafe = sum(1 for c in s_cases if c.get("outcome") == "FAIL_SAFE_TRIGGERED")
+        wrong = sum(1 for c in s_cases if c.get("outcome") == "HEALED_BUT_WRONG_DATA")
+        crashed = sum(1 for c in s_cases if c.get("outcome") == "CRASHED")
+        total = len(s_cases)
+        summary_by_suite[s] = {
+            "total": total,
+            "healed": healed,
+            "failsafe": failsafe,
+            "wrong": wrong,
+            "crashed": crashed,
+            "rate": round((healed + failsafe) / total * 100, 1) if total > 0 else 0
+        }
+
+    total_healed = sum(1 for c in cases if c.get("outcome") == "HEALED_CORRECTLY")
+    total_failsafe = sum(1 for c in cases if c.get("outcome") == "FAIL_SAFE_TRIGGERED")
+    total_wrong = sum(1 for c in cases if c.get("outcome") == "HEALED_BUT_WRONG_DATA")
+    total_crashed = sum(1 for c in cases if c.get("outcome") == "CRASHED")
+    total = len(cases)
+
+    return {
+        "status": "success",
+        "summary": {
+            "total": total,
+            "healed": total_healed,
+            "failsafe": total_failsafe,
+            "wrong_data": total_wrong,
+            "crashed": total_crashed,
+            "safe_resilient_rate": round((total_healed + total_failsafe) / total * 100, 1) if total > 0 else 100.0
+        },
+        "by_suite": summary_by_suite,
+        "cases": cases
+    }
+
+@app.post("/api/benchmark/run")
+async def run_benchmark_live():
+    from run_master_33_benchmark import run_master_benchmark
+
+    async def broadcast_progress(current, total, rec):
+        pct = round(current / total * 100)
+        await pipeline_engine.broadcast("benchmark_progress", {
+            "current": current,
+            "total": total,
+            "percent": pct,
+            "case": rec
+        })
+
+    # Run in background or directly
+    asyncio.create_task(run_master_benchmark(progress_callback=broadcast_progress))
+    return {"status": "started", "message": "Master 33-Case Benchmark suite initiated."}
 
 @app.post("/api/run")
 async def trigger_run(request: RunPipelineRequest):

@@ -55,6 +55,7 @@ SAFE_BUILTINS = {
     "sum": sum,
     "tuple": tuple,
     "zip": zip,
+    "next": next,
     "print": print,
     "Exception": Exception,
     "ValueError": ValueError,
@@ -71,22 +72,24 @@ FORBIDDEN_CALLS: Set[str] = {
 class SecurityVisitor(ast.NodeVisitor):
     """
     AST visitor enforcing:
-    1. Exactly one FunctionDef with the target helper name.
+    1. Exactly one top-level FunctionDef with the target helper name.
     2. Imports restricted to explicit SAFE_MODULES allowlist.
-    3. No dunder method or attribute access (__dict__, __class__, etc.).
+    3. No dangerous dunder method or attribute access (__class__, __dict__, etc.).
     4. No dangerous function calls (open, eval, exec, etc.).
     """
     def __init__(self, expected_function_name: Optional[str] = None):
         self.expected_function_name = expected_function_name
-        self.found_functions = []
+        self.top_level_functions = []
         self.security_violations = []
 
-    def visit_FunctionDef(self, node: ast.FunctionDef):
-        self.found_functions.append(node.name)
-        if self.expected_function_name and node.name != self.expected_function_name:
-            self.security_violations.append(
-                f"Function name '{node.name}' does not match expected helper '{self.expected_function_name}'"
-            )
+    def visit_Module(self, node: ast.Module):
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef):
+                self.top_level_functions.append(item.name)
+                if self.expected_function_name and item.name != self.expected_function_name:
+                    self.security_violations.append(
+                        f"Top-level function name '{item.name}' does not match expected helper '{self.expected_function_name}'"
+                    )
         self.generic_visit(node)
 
     def visit_Import(self, node: ast.Import):
@@ -108,9 +111,10 @@ class SecurityVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Attribute(self, node: ast.Attribute):
-        # Disallow dunder attributes
+        # Disallow dangerous dunder attributes
         if node.attr.startswith("__") and node.attr.endswith("__"):
-            self.security_violations.append(f"Forbidden dunder attribute access: '{node.attr}'")
+            if node.attr not in ["__name__", "__doc__"]:
+                self.security_violations.append(f"Forbidden dunder attribute access: '{node.attr}'")
         self.generic_visit(node)
 
 
@@ -130,10 +134,10 @@ def validate_ast_security(
     visitor = SecurityVisitor(expected_function_name=expected_function_name)
     visitor.visit(parsed_ast)
 
-    if len(visitor.found_functions) == 0:
-        return False, f"No function definition found in code (expected '{expected_function_name}')."
-    if len(visitor.found_functions) > 1:
-        return False, f"Expected exactly 1 function definition, found {len(visitor.found_functions)}: {visitor.found_functions}"
+    if len(visitor.top_level_functions) == 0:
+        return False, f"No top-level function definition found in code (expected '{expected_function_name}')."
+    if len(visitor.top_level_functions) > 1:
+        return False, f"Expected exactly 1 top-level function definition, found {len(visitor.top_level_functions)}: {visitor.top_level_functions}"
     if visitor.security_violations:
         return False, f"Security violations detected: {'; '.join(visitor.security_violations)}"
 
@@ -158,6 +162,12 @@ def validate_helper_output(helper_name: str, output: Any) -> Tuple[bool, str]:
         missing = [k for k in required_keys if k not in output]
         if missing:
             return False, f"Missing required canonical keys in resolved record: {missing}"
+        curr = str(output.get("currency", ""))
+        if not curr.isalpha() or len(curr) != 3:
+            return False, f"Currency must be 3-letter alpha ISO code, got '{curr}'"
+        cid = str(output.get("client_id", ""))
+        if cid.startswith("[") and cid.endswith("]"):
+            return False, f"client_id must be scalar string, not stringified array '{cid}'"
         return True, "Valid canonical record dictionary."
 
     elif helper_name == "coerce_amount":
@@ -213,8 +223,12 @@ def sandbox_test_patch(
     dry_run_input = sample_input
     if helper_name == "coerce_amount" and isinstance(sample_input, dict):
         dry_run_input = (
-            sample_input.get("amount") or sample_input.get("gross_amount") or
-            sample_input.get("last_price") or sample_input.get("price") or 0.0
+            sample_input.get("amount") if sample_input.get("amount") is not None else (
+                sample_input.get("original_amount") or sample_input.get("amount_override") or
+                sample_input.get("value") or sample_input.get("val") or
+                sample_input.get("gross_amount") or sample_input.get("raw_amount") or
+                sample_input.get("last_price") or sample_input.get("price") or 0.0
+            )
         )
     elif helper_name == "normalize_timestamp" and isinstance(sample_input, dict):
         dry_run_input = sample_input.get("timestamp") or "2026-09-25T16:00:00Z"

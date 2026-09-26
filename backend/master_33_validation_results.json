@@ -1,0 +1,1029 @@
+[
+  {
+    "suite": "Original 15",
+    "id": "TC-01",
+    "name": "Combined Renamed Field + Corrupt Epoch Timestamp",
+    "dimension": "Combined Renamed Field + Corrupt Epoch Timestamp",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "payload": [
+      {
+        "tx_id": "TX-COMB-101",
+        "user_id": "USR-101",
+        "gross_amount": 1250.0,
+        "currency": "USD",
+        "timestamp": 1790336893000,
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Autonomously healed via fallback in 14.23ms MTTR."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-02",
+    "name": "Zero-Semantic Obscure Key Renaming ('val_7')",
+    "dimension": "Zero-Semantic Obscure Key Renaming ('val_7')",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "payload": [
+      {
+        "k_99": "TX-OBSC-202",
+        "u_alpha": "USR-102",
+        "val_7": 450.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Autonomously healed via fallback in 14.8ms MTTR."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-03",
+    "name": "New Data Type Mutation (Nested Object Amount)",
+    "dimension": "New Data Type Mutation (Nested Object Amount)",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-NEST-303",
+        "user_id": "USR-103",
+        "amount": {
+          "value": 850.25,
+          "unit": "USD"
+        },
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Pipeline processed and loaded cleanly."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-04",
+    "name": "Deep 5-Level Nested Envelope",
+    "dimension": "Deep 5-Level Nested Envelope",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (unwrap_envelope): TypeError: Invalid API response structur...",
+    "payload": {
+      "meta": {
+        "api_version": "v3",
+        "gateway": {
+          "feed": {
+            "records": [
+              {
+                "tx_id": "TX-DEEP-404",
+                "user_id": "USR-104",
+                "amount": 320.0,
+                "currency": "USD",
+                "timestamp": "2026-09-25T16:00:00Z",
+                "status": "completed"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "row_data": [],
+    "notes": "Autonomously healed via fallback in 12.19ms MTTR."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-05",
+    "name": "Sibling Property Shadowing & Conflicting Fields",
+    "dimension": "Sibling Property Shadowing & Conflicting Fields",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "payload": [
+      {
+        "tx_id": "TX-SIBL-505",
+        "user_id": "USR-105",
+        "amount": null,
+        "original_amount": 990.0,
+        "amount_override": 1200.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Autonomously healed via fallback in 11.67ms MTTR."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-06",
+    "name": "Inconsistent Heterogeneous Schemas Within Same Batch",
+    "dimension": "Inconsistent Heterogeneous Schemas Within Same Batch",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "payload": [
+      {
+        "tx_id": "TX-HET-601",
+        "user_id": "USR-106A",
+        "amount": 100.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "reference_id": "TX-HET-602",
+        "client_id": "USR-106B",
+        "gross_amount": 200.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-HET-603",
+        "user_id": "USR-106C",
+        "amount": 300.0,
+        "currency": "USD",
+        "timestamp": 1758816000000,
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Autonomously healed via fallback in 13.11ms MTTR."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-07",
+    "name": "Valid JSON but Semantically Nonsensical (Negative Amount & Fake Currency)",
+    "dimension": "Valid JSON but Semantically Nonsensical (Negative Amount & Fake Currency)",
+    "outcome": "FAIL_SAFE_TRIGGERED",
+    "data_correct": "No (Stopped)",
+    "node_exception": "Enrich (Calculation Error)",
+    "payload": [
+      {
+        "tx_id": "TX-NONS-707",
+        "user_id": "USR-107",
+        "amount": -2500.0,
+        "currency": "XYZ123",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Guardrail stopped pipeline: Enrichment violation at record #0: invalid amount -2500.0"
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-08",
+    "name": "Completely Empty Array Payload",
+    "dimension": "Completely Empty Array Payload",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [],
+    "row_data": [],
+    "notes": "Pipeline processed and loaded cleanly."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-09",
+    "name": "Duplicate Primary Key tx_id Collision in Same Batch",
+    "dimension": "Duplicate Primary Key tx_id Collision in Same Batch",
+    "outcome": "FAIL_SAFE_TRIGGERED",
+    "data_correct": "No (Stopped)",
+    "node_exception": "Verify (Invariants Failed)",
+    "payload": [
+      {
+        "tx_id": "TX-DUP-999",
+        "user_id": "USR-109A",
+        "amount": 500.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-DUP-999",
+        "user_id": "USR-109B",
+        "amount": 750.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Guardrail stopped pipeline: Verification failed: [\"Record #1: duplicate tx_id 'TX-DUP-99"
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-10",
+    "name": "Natural Language Relative Timestamp",
+    "dimension": "Natural Language Relative Timestamp",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (normalize_timestamp): ValueError: Timestamp invariant violatio...",
+    "payload": [
+      {
+        "tx_id": "TX-TIME-1010",
+        "user_id": "USR-110",
+        "amount": 420.0,
+        "currency": "USD",
+        "timestamp": "two days ago",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Autonomously healed via fallback in 12.65ms MTTR."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-11",
+    "name": "Sequential Back-to-Back Novel Failures (Cross-Patch Interference)",
+    "dimension": "Sequential Back-to-Back Novel Failures (Cross-Patch Interference)",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-SEQ-1111",
+        "user_id": "USR-111",
+        "amount": {
+          "val": 600.0
+        },
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Pipeline processed and loaded cleanly."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-12",
+    "name": "Nested Array Type for String user_id Identifier",
+    "dimension": "Nested Array Type for String user_id Identifier",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-ARR-1212",
+        "user_id": [
+          "USR-CORP-1",
+          "DEPT-FINANCE"
+        ],
+        "amount": 310.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Pipeline processed and loaded cleanly."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-13",
+    "name": "Numeric ISO 4217 Currency Code (840 for USD)",
+    "dimension": "Numeric ISO 4217 Currency Code (840 for USD)",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-ISO-1313",
+        "user_id": "USR-113",
+        "amount": 150.0,
+        "currency": 840,
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Pipeline processed and loaded cleanly."
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-14",
+    "name": "Corrupt Upstream Gateway HTML/Text String",
+    "dimension": "Corrupt Upstream Gateway HTML/Text String",
+    "outcome": "FAIL_SAFE_TRIGGERED",
+    "data_correct": "No (Stopped)",
+    "node_exception": "Cleanse (unwrap_envelope): TypeError: Invalid API response structur...",
+    "payload": "<html><head><title>502 Bad Gateway</title></head><body><h1>Bad Gateway</h1></body></html>",
+    "row_data": [],
+    "notes": "Guardrail stopped pipeline: FAIL_SAFE triggered: unable to heal unwrap_envelope after 1 "
+  },
+  {
+    "suite": "Original 15",
+    "id": "TC-15",
+    "name": "Extreme Missing Keys (Only tx_id Present)",
+    "dimension": "Extreme Missing Keys (Only tx_id Present)",
+    "outcome": "FAIL_SAFE_TRIGGERED",
+    "data_correct": "No (Stopped)",
+    "node_exception": "Cleanse (insufficient_data): InsufficientDataError: Payload has insuf...",
+    "payload": [
+      {
+        "tx_id": "TX-BARE-1515"
+      }
+    ],
+    "row_data": [],
+    "notes": "Guardrail stopped pipeline: Guardrail triggered: Payload has insufficient fields to reco"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-16",
+    "name": "Three-Way Combined Failure (Rename + Numeric Currency + Nested Array User)",
+    "dimension": "gross_amount + currency: 978 (EUR) + user_id: ['USR-CORP-9', 'SUBSIDIARY-EU']",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "payload": [
+      {
+        "tx_id": "TX-3WAY-1616",
+        "user_id": [
+          "USR-CORP-9",
+          "SUBSIDIARY-EU"
+        ],
+        "gross_amount": 1450.0,
+        "currency": 978,
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-3WAY-1616",
+        "USR-CORP-9",
+        1450.0,
+        261.0,
+        1711.0,
+        "EUR",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "All 3 mutations healed: client=USR-CORP-9, amt=$1450.0, curr=EUR"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-17",
+    "name": "Mixed Batch (80% Clean, 20% Novel Drifted Record)",
+    "dimension": "Batch of 5 records: records 0,1,2,4 clean, record 3 has trade_amount & client_ref",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "payload": [
+      {
+        "tx_id": "TX-MIX-01",
+        "user_id": "USR-201",
+        "amount": 100.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-MIX-02",
+        "user_id": "USR-202",
+        "amount": 200.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-MIX-03",
+        "user_id": "USR-203",
+        "amount": 300.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-MIX-04",
+        "client_ref": "USR-204",
+        "trade_amount": 400.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-MIX-05",
+        "user_id": "USR-205",
+        "amount": 500.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-MIX-01",
+        "USR-201",
+        100.0,
+        18.0,
+        118.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-MIX-02",
+        "USR-202",
+        200.0,
+        36.0,
+        236.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-MIX-03",
+        "USR-203",
+        300.0,
+        54.0,
+        354.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-MIX-04",
+        "USR-204",
+        400.0,
+        72.0,
+        472.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-MIX-05",
+        "USR-205",
+        500.0,
+        90.0,
+        590.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "All 5 records cleanly loaded (4 clean + 1 drifted): [100.0, 200.0, 300.0, 400.0, 500.0]"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-18",
+    "name": "Field with Correct Name but Boolean Value (amount: True)",
+    "dimension": "amount: true (boolean instead of numeric currency float)",
+    "outcome": "FAIL_SAFE_TRIGGERED",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (coerce_amount): TypeError: Type violation on amount: boo...",
+    "payload": [
+      {
+        "tx_id": "TX-BOOL-1818",
+        "user_id": "USR-118",
+        "amount": true,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Guardrail safely caught boolean amount: stopped financial corruption."
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-19",
+    "name": "Currency Given as Full Word ('US Dollars')",
+    "dimension": "currency: 'US Dollars' instead of 3-letter code 'USD'",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-WORD-1919",
+        "user_id": "USR-119",
+        "amount": 250.0,
+        "currency": "US Dollars",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-WORD-1919",
+        "USR-119",
+        250.0,
+        45.0,
+        295.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Currency 'US Dollars' mapped to canonical 'USD': USD"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-20",
+    "name": "Timestamp with Timezone Offset ('2026-09-25T10:00:00-05:00')",
+    "dimension": "Timestamp with -05:00 offset; must convert to UTC ending in 'Z' (15:00:00Z)",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-OFFSET-2020",
+        "user_id": "USR-120",
+        "amount": 180.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T10:00:00-05:00",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-OFFSET-2020",
+        "USR-120",
+        180.0,
+        32.4,
+        212.4,
+        "USD",
+        "2026-09-25T15:00:00Z"
+      ]
+    ],
+    "notes": "Offset correctly converted to UTC: 2026-09-25T15:00:00Z"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-21",
+    "name": "European Formatted Number String ('1.250,99')",
+    "dimension": "amount: '1.250,99' with period thousand separator and comma decimal",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (coerce_amount): ValueError: could not convert string to ...",
+    "payload": [
+      {
+        "tx_id": "TX-NUMFMT-2121",
+        "user_id": "USR-121",
+        "amount": "1.250,99",
+        "currency": "EUR",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-NUMFMT-2121",
+        "USR-121",
+        1250.99,
+        225.18,
+        1476.17,
+        "EUR",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "European number format parsed to float: 1250.99"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-22",
+    "name": "Swapped Identifiers (tx_id has USR value, user_id has TX value)",
+    "dimension": "tx_id: 'USR-777', user_id: 'TX-SWAP-2222'",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "USR-777",
+        "user_id": "TX-SWAP-2222",
+        "amount": 550.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-SWAP-2222",
+        "USR-777",
+        550.0,
+        99.0,
+        649.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Swapped identifiers detected by value shape: tx_id=TX-SWAP-2222, client=USR-777"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-23",
+    "name": "Nested Envelope with Sibling False-Lead Lists",
+    "dimension": "Envelope contains debug_logs, audits, and genuine transactions list alongside",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (unwrap_envelope): TypeError: Invalid API response structur...",
+    "payload": {
+      "meta": {
+        "status": 200,
+        "debug_logs": [
+          {
+            "log_id": 1,
+            "msg": "ok"
+          },
+          {
+            "log_id": 2,
+            "msg": "started"
+          }
+        ],
+        "system_warnings": [
+          "disk_low",
+          "rate_limit_warn"
+        ],
+        "data": {
+          "audits": [
+            {
+              "audit_id": "A1"
+            },
+            {
+              "audit_id": "A2"
+            }
+          ],
+          "transactions": [
+            {
+              "tx_id": "TX-BRANCH-2323",
+              "user_id": "USR-123",
+              "amount": 890.0,
+              "currency": "USD",
+              "timestamp": "2026-09-25T16:00:00Z",
+              "status": "completed"
+            }
+          ]
+        }
+      }
+    },
+    "row_data": [
+      [
+        "TX-BRANCH-2323",
+        "USR-123",
+        890.0,
+        160.2,
+        1050.2,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Found correct transaction list among false leads: amount=$890.0"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-24",
+    "name": "Lone Single Object Payload (No List Wrapper)",
+    "dimension": "Payload is a bare dict {tx_id: ...} instead of a list of dicts [{...}]",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (unwrap_envelope): TypeError: Invalid API response structur...",
+    "payload": {
+      "tx_id": "TX-LONE-2424",
+      "user_id": "USR-124",
+      "amount": 415.0,
+      "currency": "USD",
+      "timestamp": "2026-09-25T16:00:00Z",
+      "status": "completed"
+    },
+    "row_data": [
+      [
+        "TX-LONE-2424",
+        "USR-124",
+        415.0,
+        74.7,
+        489.7,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Lone dictionary auto-wrapped and cleansed cleanly: amount=$415.0"
+  },
+  {
+    "suite": "Fresh 10",
+    "id": "TC-25",
+    "name": "Sequential Collision (Rename gross_amount immediately after client_ref patch)",
+    "dimension": "Tests patch cache isolation when two different renames occur sequentially",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (resolve_key_aliases): KeyError: \"Missing required canonical fi...",
+    "payload": [
+      {
+        "tx_id": "TX-COLL-2525",
+        "user_id": "USR-125",
+        "gross_amount": 775.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-COLL-2525",
+        "USR-125",
+        775.0,
+        139.5,
+        914.5,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Sequential drift handled without cache collision: amount=$775.0"
+  },
+  {
+    "suite": "Cold 8",
+    "id": "COLD-01",
+    "name": "Scientific Notation Amount ('4.5e2')",
+    "dimension": "amount: '4.5e2' string representation of 450.0",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-COLD-01",
+        "user_id": "USR-COLD-1",
+        "amount": "4.5e2",
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-COLD-01",
+        "USR-COLD-1",
+        450.0,
+        81.0,
+        531.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Parsed scientific notation correctly: amount=450.0"
+  },
+  {
+    "suite": "Cold 8",
+    "id": "COLD-02",
+    "name": "Duplicate tx_id with Divergent Data in Single Batch",
+    "dimension": "Batch with same tx_id 'TX-DUP-SAME' twice, but with different amounts and users",
+    "outcome": "FAIL_SAFE_TRIGGERED",
+    "data_correct": "Yes",
+    "node_exception": "Verify (Invariants Failed)",
+    "payload": [
+      {
+        "tx_id": "TX-DUP-SAME",
+        "user_id": "USR-ALPHA",
+        "amount": 100.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-DUP-SAME",
+        "user_id": "USR-BETA",
+        "amount": 999.0,
+        "currency": "EUR",
+        "timestamp": "2026-09-25T17:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "FAIL_SAFE guardrail caught duplicate tx_id in batch; prevented DB primary key conflict."
+  },
+  {
+    "suite": "Cold 8",
+    "id": "COLD-03",
+    "name": "Valid ISO Alpha Code for Uncommon Currency ('BTC')",
+    "dimension": "currency: 'BTC' (3-letter crypto code rather than fiat)",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-COLD-03",
+        "user_id": "USR-COLD-3",
+        "amount": 1.5,
+        "currency": "BTC",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-COLD-03",
+        "USR-COLD-3",
+        1.5,
+        0.27,
+        1.77,
+        "BTC",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Standard 3-letter non-fiat ISO currency accepted: curr=BTC, amount=1.5"
+  },
+  {
+    "suite": "Cold 8",
+    "id": "COLD-04",
+    "name": "Paged Records Split Across Multiple Array Elements",
+    "dimension": "results: [{'page': 1, 'data': [...]}, {'page': 2, 'data': [...]}]",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (unwrap_envelope): TypeError: Invalid API response structur...",
+    "payload": {
+      "results": [
+        {
+          "page": 1,
+          "data": [
+            {
+              "tx_id": "TX-PAGE-01",
+              "user_id": "USR-P1",
+              "amount": 120.0,
+              "currency": "USD",
+              "timestamp": "2026-09-25T16:00:00Z",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "page": 2,
+          "data": [
+            {
+              "tx_id": "TX-PAGE-02",
+              "user_id": "USR-P2",
+              "amount": 240.0,
+              "currency": "USD",
+              "timestamp": "2026-09-25T16:00:00Z",
+              "status": "completed"
+            }
+          ]
+        }
+      ]
+    },
+    "row_data": [
+      [
+        "TX-PAGE-01",
+        "USR-P1",
+        120.0,
+        21.6,
+        141.6,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-PAGE-02",
+        "USR-P2",
+        240.0,
+        43.2,
+        283.2,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Both paged record lists unwrapped and loaded: 2 records"
+  },
+  {
+    "suite": "Cold 8",
+    "id": "COLD-05",
+    "name": "Amount String with Non-Breaking Space (' 450.00\\u00a0')",
+    "dimension": "amount: ' 450.00\\u00a0' with leading spaces and non-breaking space suffix",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-COLD-05",
+        "user_id": "USR-COLD-5",
+        "amount": " 450.00\u00a0",
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-COLD-05",
+        "USR-COLD-5",
+        450.0,
+        81.0,
+        531.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Whitespace and non-breaking space cleanly stripped: amount=450.0"
+  },
+  {
+    "suite": "Cold 8",
+    "id": "COLD-06",
+    "name": "Extra Unexpected Metadata Fields Alongside Canonical Fields",
+    "dimension": "Record contains valid canonical fields plus telemetry & compliance metadata",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "None",
+    "payload": [
+      {
+        "tx_id": "TX-COLD-06",
+        "user_id": "USR-COLD-6",
+        "amount": 350.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed",
+        "meta_audit_telemetry": {
+          "trace_depth": 4,
+          "server_tags": [
+            "edge-us-east-1",
+            "canary"
+          ]
+        },
+        "risk_score": 0.042,
+        "compliance_flags": [
+          "AML_CLEARED",
+          "KYC_PASS"
+        ]
+      }
+    ],
+    "row_data": [
+      [
+        "TX-COLD-06",
+        "USR-COLD-6",
+        350.0,
+        63.0,
+        413.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Extra metadata fields ignored safely, canonical record cleanly loaded: tx_id=TX-COLD-06"
+  },
+  {
+    "suite": "Cold 8",
+    "id": "COLD-07",
+    "name": "Valid ISO Timestamp with Far-Future Year ('2099-01-01')",
+    "dimension": "timestamp: '2099-01-01T00:00:00Z' (valid ISO format, anomalous year 2099)",
+    "outcome": "FAIL_SAFE_TRIGGERED",
+    "data_correct": "Yes",
+    "node_exception": "Verify (Invariants Failed)",
+    "payload": [
+      {
+        "tx_id": "TX-COLD-07",
+        "user_id": "USR-COLD-7",
+        "amount": 500.0,
+        "currency": "USD",
+        "timestamp": "2099-01-01T00:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [],
+    "notes": "Guardrail rejected anomalous far-future timestamp (2099)"
+  },
+  {
+    "suite": "Cold 8",
+    "id": "COLD-08",
+    "name": "Co-Occurring Distinct Drifts in Same Batch",
+    "dimension": "Record 1 has renamed user_id ('customer_account'), Record 2 has renamed amount ('settlement_value')",
+    "outcome": "HEALED_CORRECTLY",
+    "data_correct": "Yes",
+    "node_exception": "Cleanse (resolve_key_aliases): ValueError: Missing or null required fie...",
+    "payload": [
+      {
+        "tx_id": "TX-COLD-08A",
+        "customer_account": "USR-COLD-8A",
+        "amount": 600.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-COLD-08B",
+        "user_id": "USR-COLD-8B",
+        "settlement_value": 750.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "row_data": [
+      [
+        "TX-COLD-08A",
+        "USR-COLD-8A",
+        600.0,
+        108.0,
+        708.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-COLD-08B",
+        "USR-COLD-8B",
+        750.0,
+        135.0,
+        885.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Both distinct field drifts in the same batch healed correctly."
+  }
+]

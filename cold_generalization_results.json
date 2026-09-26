@@ -1,0 +1,320 @@
+[
+  {
+    "id": "COLD-01",
+    "name": "Scientific Notation Amount ('4.5e2')",
+    "dimension": "amount: '4.5e2' string representation of 450.0",
+    "payload_sent": [
+      {
+        "tx_id": "TX-COLD-01",
+        "user_id": "USR-COLD-1",
+        "amount": "4.5e2",
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_step_hit": "pipeline",
+    "node_exception": "None",
+    "diagnosis_correct": "N/A (Clean)",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-COLD-01",
+        "USR-COLD-1",
+        450.0,
+        81.0,
+        531.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Parsed scientific notation correctly: amount=450.0"
+  },
+  {
+    "id": "COLD-02",
+    "name": "Duplicate tx_id with Divergent Data in Single Batch",
+    "dimension": "Batch with same tx_id 'TX-DUP-SAME' twice, but with different amounts and users",
+    "payload_sent": [
+      {
+        "tx_id": "TX-DUP-SAME",
+        "user_id": "USR-ALPHA",
+        "amount": 100.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-DUP-SAME",
+        "user_id": "USR-BETA",
+        "amount": 999.0,
+        "currency": "EUR",
+        "timestamp": "2026-09-25T17:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_step_hit": "node_verify",
+    "node_exception": "Verify (Invariants Failed)",
+    "diagnosis_correct": "N/A",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "FAIL_SAFE_TRIGGERED",
+    "rows_loaded": 0,
+    "row_data": [],
+    "notes": "FAIL_SAFE guardrail caught duplicate tx_id in batch; prevented DB primary key conflict."
+  },
+  {
+    "id": "COLD-03",
+    "name": "Valid ISO Alpha Code for Uncommon Currency ('BTC')",
+    "dimension": "currency: 'BTC' (3-letter crypto code rather than fiat)",
+    "payload_sent": [
+      {
+        "tx_id": "TX-COLD-03",
+        "user_id": "USR-COLD-3",
+        "amount": 1.5,
+        "currency": "BTC",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_step_hit": "pipeline",
+    "node_exception": "None",
+    "diagnosis_correct": "N/A (Clean)",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-COLD-03",
+        "USR-COLD-3",
+        1.5,
+        0.27,
+        1.77,
+        "BTC",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Standard 3-letter non-fiat ISO currency accepted: curr=BTC, amount=1.5"
+  },
+  {
+    "id": "COLD-04",
+    "name": "Paged Records Split Across Multiple Array Elements",
+    "dimension": "results: [{'page': 1, 'data': [...]}, {'page': 2, 'data': [...]}]",
+    "payload_sent": {
+      "results": [
+        {
+          "page": 1,
+          "data": [
+            {
+              "tx_id": "TX-PAGE-01",
+              "user_id": "USR-P1",
+              "amount": 120.0,
+              "currency": "USD",
+              "timestamp": "2026-09-25T16:00:00Z",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "page": 2,
+          "data": [
+            {
+              "tx_id": "TX-PAGE-02",
+              "user_id": "USR-P2",
+              "amount": 240.0,
+              "currency": "USD",
+              "timestamp": "2026-09-25T16:00:00Z",
+              "status": "completed"
+            }
+          ]
+        }
+      ]
+    },
+    "node_step_hit": "pipeline",
+    "node_exception": "Cleanse (unwrap_envelope): TypeError: Invalid API response structur...",
+    "diagnosis_correct": "Yes",
+    "sandbox_passed": "Yes (Cached)",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 2,
+    "row_data": [
+      [
+        "TX-PAGE-01",
+        "USR-P1",
+        120.0,
+        21.6,
+        141.6,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-PAGE-02",
+        "USR-P2",
+        240.0,
+        43.2,
+        283.2,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Both paged record lists unwrapped and loaded: 2 records"
+  },
+  {
+    "id": "COLD-05",
+    "name": "Amount String with Non-Breaking Space (' 450.00\\u00a0')",
+    "dimension": "amount: ' 450.00\\u00a0' with leading spaces and non-breaking space suffix",
+    "payload_sent": [
+      {
+        "tx_id": "TX-COLD-05",
+        "user_id": "USR-COLD-5",
+        "amount": " 450.00\u00a0",
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_step_hit": "pipeline",
+    "node_exception": "None",
+    "diagnosis_correct": "N/A (Clean)",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-COLD-05",
+        "USR-COLD-5",
+        450.0,
+        81.0,
+        531.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Whitespace and non-breaking space cleanly stripped: amount=450.0"
+  },
+  {
+    "id": "COLD-06",
+    "name": "Extra Unexpected Metadata Fields Alongside Canonical Fields",
+    "dimension": "Record contains valid canonical fields plus telemetry & compliance metadata",
+    "payload_sent": [
+      {
+        "tx_id": "TX-COLD-06",
+        "user_id": "USR-COLD-6",
+        "amount": 350.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed",
+        "meta_audit_telemetry": {
+          "trace_depth": 4,
+          "server_tags": [
+            "edge-us-east-1",
+            "canary"
+          ]
+        },
+        "risk_score": 0.042,
+        "compliance_flags": [
+          "AML_CLEARED",
+          "KYC_PASS"
+        ]
+      }
+    ],
+    "node_step_hit": "pipeline",
+    "node_exception": "None",
+    "diagnosis_correct": "N/A (Clean)",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 1,
+    "row_data": [
+      [
+        "TX-COLD-06",
+        "USR-COLD-6",
+        350.0,
+        63.0,
+        413.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Extra metadata fields ignored safely, canonical record cleanly loaded: tx_id=TX-COLD-06"
+  },
+  {
+    "id": "COLD-07",
+    "name": "Valid ISO Timestamp with Far-Future Year ('2099-01-01')",
+    "dimension": "timestamp: '2099-01-01T00:00:00Z' (valid ISO format, anomalous year 2099)",
+    "payload_sent": [
+      {
+        "tx_id": "TX-COLD-07",
+        "user_id": "USR-COLD-7",
+        "amount": 500.0,
+        "currency": "USD",
+        "timestamp": "2099-01-01T00:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_step_hit": "node_verify",
+    "node_exception": "Verify (Invariants Failed)",
+    "diagnosis_correct": "N/A",
+    "sandbox_passed": "N/A",
+    "data_correct": "Yes",
+    "final_outcome": "FAIL_SAFE_TRIGGERED",
+    "rows_loaded": 0,
+    "row_data": [],
+    "notes": "Guardrail rejected anomalous far-future timestamp (2099)"
+  },
+  {
+    "id": "COLD-08",
+    "name": "Co-Occurring Distinct Drifts in Same Batch",
+    "dimension": "Record 1 has renamed user_id ('customer_account'), Record 2 has renamed amount ('settlement_value')",
+    "payload_sent": [
+      {
+        "tx_id": "TX-COLD-08A",
+        "customer_account": "USR-COLD-8A",
+        "amount": 600.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      },
+      {
+        "tx_id": "TX-COLD-08B",
+        "user_id": "USR-COLD-8B",
+        "settlement_value": 750.0,
+        "currency": "USD",
+        "timestamp": "2026-09-25T16:00:00Z",
+        "status": "completed"
+      }
+    ],
+    "node_step_hit": "pipeline",
+    "node_exception": "Cleanse (resolve_key_aliases): ValueError: Missing or null required fie...",
+    "diagnosis_correct": "Yes",
+    "sandbox_passed": "Yes (Cached)",
+    "data_correct": "Yes",
+    "final_outcome": "HEALED_CORRECTLY",
+    "rows_loaded": 2,
+    "row_data": [
+      [
+        "TX-COLD-08A",
+        "USR-COLD-8A",
+        600.0,
+        108.0,
+        708.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ],
+      [
+        "TX-COLD-08B",
+        "USR-COLD-8B",
+        750.0,
+        135.0,
+        885.0,
+        "USD",
+        "2026-09-25T16:00:00Z"
+      ]
+    ],
+    "notes": "Both distinct field drifts in the same batch healed correctly."
+  }
+]

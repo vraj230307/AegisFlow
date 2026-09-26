@@ -8,12 +8,14 @@ import FailureControls from './components/FailureControls';
 import AgentTerminal from './components/AgentTerminal';
 import DataInspector from './components/DataInspector';
 import ApiKeyModal from './components/ApiKeyModal';
+import BenchmarkSuite from './components/BenchmarkSuite';
 import { PipelineWSClient } from './services/websocket';
 
 const BACKEND_BASE = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
 const WS_URL = import.meta.env.VITE_WS_URL || (BACKEND_BASE.replace(/^http/, 'ws') + "/ws/pipeline");
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState('pipeline');
   const [isConnected, setIsConnected] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
@@ -213,37 +215,48 @@ export default function App() {
         isConnected={isConnected}
         onOpenKeyModal={() => setIsKeyModalOpen(true)}
         hasApiKey={hasApiKey}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
       />
 
-      <MetricsPanel metrics={metrics} />
+      {activeTab === 'benchmark' ? (
+        <BenchmarkSuite
+          backendUrl={BACKEND_BASE}
+          isConnected={isConnected}
+        />
+      ) : (
+        <>
+          <MetricsPanel metrics={metrics} />
 
-      <PipelineGraph
-        nodes={nodes}
-        selectedNodeId={selectedNodeId}
-        onSelectNode={setSelectedNodeId}
-      />
+          <PipelineGraph
+            nodes={nodes}
+            selectedNodeId={selectedNodeId}
+            onSelectNode={setSelectedNodeId}
+          />
 
-      <FailureControls
-        selectedScenario={selectedScenario}
-        onSelectScenario={setSelectedScenario}
-        useCachedPatches={useCachedPatches}
-        onToggleCachedPatches={setUseCachedPatches}
-        recordsCount={recordsCount}
-        onChangeRecordsCount={setRecordsCount}
-        onRunPipeline={handleRunPipeline}
-        onResetPatches={handleResetPatches}
-        isRunning={isRunning}
-      />
+          <FailureControls
+            selectedScenario={selectedScenario}
+            onSelectScenario={setSelectedScenario}
+            useCachedPatches={useCachedPatches}
+            onToggleCachedPatches={setUseCachedPatches}
+            recordsCount={recordsCount}
+            onChangeRecordsCount={setRecordsCount}
+            onRunPipeline={handleRunPipeline}
+            onResetPatches={handleResetPatches}
+            isRunning={isRunning}
+          />
 
-      <AgentTerminal
-        logs={logs}
-        latestPatch={latestPatch}
-      />
+          <AgentTerminal
+            logs={logs}
+            latestPatch={latestPatch}
+          />
 
-      <DataInspector
-        selectedNode={selectedNode}
-        failureScenario={selectedScenario}
-      />
+          <DataInspector
+            selectedNode={selectedNode}
+            failureScenario={selectedScenario}
+          />
+        </>
+      )}
 
       <ApiKeyModal
         isOpen={isKeyModalOpen}

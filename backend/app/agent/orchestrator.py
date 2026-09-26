@@ -121,14 +121,24 @@ class PipelineOrchestrator:
         self.patch_cache.clear()
 
     def _compute_schema_fingerprint(self, payload: Any) -> str:
-        """Computes a deterministic fingerprint of the payload keys/structure."""
-        if isinstance(payload, list) and len(payload) > 0 and isinstance(payload[0], dict):
-            keys = sorted(payload[0].keys())
-        elif isinstance(payload, dict):
-            keys = sorted(payload.keys())
-        else:
-            keys = [str(type(payload).__name__)]
-        return hashlib.md5(json.dumps(keys).encode()).hexdigest()[:8]
+        """
+        Computes a deterministic fingerprint of payload keys, nested dictionary structures,
+        and value types to prevent cross-patch cache collisions between different schema drifts (TC-11).
+        """
+        def extract_shape(obj: Any, depth: int = 0) -> Any:
+            if depth > 4:
+                return type(obj).__name__
+            if isinstance(obj, dict):
+                return {k: extract_shape(v, depth + 1) for k, v in sorted(obj.items())}
+            elif isinstance(obj, (list, tuple)):
+                if len(obj) == 0:
+                    return ["<empty>"]
+                return [extract_shape(obj[0], depth + 1)]
+            else:
+                return type(obj).__name__
+
+        shape = extract_shape(payload)
+        return hashlib.md5(json.dumps(shape, sort_keys=True).encode()).hexdigest()[:10]
 
     async def run_pipeline(
         self,
@@ -174,9 +184,26 @@ class PipelineOrchestrator:
         canonical_records: Optional[List[CanonicalRecord]] = None
         cleanse_attempts = 0
         gemini_attempts = 0
+        max_cleanse_retries = 6
+        applied_cache_keys_this_run: set = set()
 
         while canonical_records is None:
             cleanse_attempts += 1
+            if cleanse_attempts > max_cleanse_retries:
+                await self.emit("FAIL_SAFE", "orchestrator", {
+                    "failing_step": "max_attempts_exceeded",
+                    "attempts": cleanse_attempts,
+                    "error": f"Cleanse exceeded max retry budget of {max_cleanse_retries}"
+                }, event_log)
+                return PipelineRunResult(
+                    success=False,
+                    state="FAIL_SAFE",
+                    healed=False,
+                    duration_ms=round((time.time() - start_time) * 1000, 2),
+                    error=f"FAIL_SAFE triggered: unable to cleanse after {cleanse_attempts} attempts.",
+                    events=event_log
+                )
+
             await self.emit("CLEANSE", "node_cleanse", {"attempt": cleanse_attempts}, event_log)
             
             try:
@@ -197,10 +224,27 @@ class PipelineOrchestrator:
                     "schema_fingerprint": fingerprint
                 }, event_log)
 
+                # Special Guardrail: If payload has insufficient fields, refuse to fabricate financial data
+                if failing_step == "insufficient_data":
+                    await self.emit("FAIL_SAFE", "node_cleanse", {
+                        "failing_step": "insufficient_data",
+                        "error": err.message,
+                        "record_index": err.record_index
+                    }, event_log)
+                    return PipelineRunResult(
+                        success=False,
+                        state="FAIL_SAFE",
+                        healed=False,
+                        duration_ms=round((time.time() - start_time) * 1000, 2),
+                        error=f"Guardrail triggered: {err.message}",
+                        events=event_log
+                    )
+
                 # -----------------------------------------------------------
                 # Strategy A: Zero-Latency Patch Cache Hit
                 # -----------------------------------------------------------
-                if cache_key in self.patch_cache:
+                if cache_key in self.patch_cache and cache_key not in applied_cache_keys_this_run:
+                    applied_cache_keys_this_run.add(cache_key)
                     cached_patch = self.patch_cache[cache_key]
                     setattr(pipeline_nodes, failing_step, cached_patch["callable"])
                     healed = True
@@ -296,6 +340,7 @@ class PipelineOrchestrator:
                             sample_input=offending_payload
                         )
                         if passed_sb and fb_fn:
+                            applied_cache_keys_this_run.add(cache_key)
                             setattr(pipeline_nodes, fb_helper, fb_fn)
                             self.patch_cache[cache_key] = {
                                 "helper_name": fb_helper,

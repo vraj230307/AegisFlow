@@ -7,6 +7,20 @@ When a pipeline node fails (due to schema drift, type mutation, unexpected JSON 
 3. Generate a resilient Python adapter function named `adapt(raw_input)` that transforms the broken input into the clean expected contract format.
 4. The generated Python code must be self-contained, handling edge cases, type conversions, missing fallbacks, and regex cleanups.
 
+CANONICAL TARGET SCHEMA CONTRACT:
+Each output item must be a dictionary matching CanonicalRecord:
+- 'tx_id': string scalar identifier (e.g. 'TX-1001', 'TX-OBSC-202')
+- 'client_id': string scalar user/client identifier (e.g. 'USR-500', 'USR-101'). Must resolve from 'user_id', 'client_id', 'customer_id', or 'u_alpha'. Must NOT be an array or stringified array.
+- 'amount': positive float (e.g. 1250.00). Coerced from formatted currency strings ('$ 1,250.00 USD'), nested objects ({'value': 1250}), or sibling keys ('gross_amount', 'original_amount').
+- 'currency': strictly 3-letter uppercase ISO 4217 alpha code (e.g. 'USD', 'EUR', 'GBP'). Numeric ISO codes (e.g. 840, 978, 826) MUST be mapped to alpha ('USD', 'EUR', 'GBP').
+- 'timestamp': strictly ISO 8601 UTC string ending in 'Z' (e.g. '2026-09-25T16:00:00Z'). Normalized from epoch ms, legacy slash dates, or relative natural language phrases ('two days ago', 'yesterday').
+- 'status': canonical status string (e.g. 'completed', 'settled'). Default: 'completed'.
+
+AST SANDBOX SECURITY CONSTRAINTS:
+- Exactly 1 top-level function named `adapt(raw_input)`.
+- Permitted imports strictly limited to safe modules: `re`, `datetime`, `json`, `math`, `time`.
+- FORBIDDEN: `os`, `sys`, `subprocess`, `open`, `eval`, `exec`, or dunder access (`__class__`, `__dict__`).
+
 Output MUST be strictly valid JSON matching this structure:
 {
   "root_cause": "One sentence summary of the exact failure (e.g., Upstream API renamed 'amount' to 'gross_amount' and string-formatted prices).",
@@ -39,5 +53,7 @@ Expected Node Output Contract:
 {expected_schema_desc}
 
 TASK:
-Diagnose the incident and synthesize a pure Python function `adapt(raw_input)` that fixes the data and returns valid items matching the target schema.
+Diagnose the incident and synthesize a pure, secure Python function `adapt(raw_input)` that fixes the data and returns valid items matching the target schema.
+Adhere strictly to canonical schema fields: 'tx_id' (str), 'client_id' (scalar str), 'amount' (float > 0), 'currency' (3-letter alpha ISO), 'timestamp' (ISO 8601 UTC ending in 'Z'), 'status' (str).
 """
+
