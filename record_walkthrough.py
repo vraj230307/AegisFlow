@@ -195,6 +195,33 @@ def record_walkthrough():
     file_size_bytes = target_video_path.stat().st_size
     file_size_mb = file_size_bytes / (1024 * 1024)
 
+    # Transcode to universal MP4 format (H.264 / YUV420p) for native Windows Media Player support
+    target_mp4_path = downloads_folder / "AegisFlow_Demo.mp4"
+    mp4_generated = False
+    try:
+        import imageio_ffmpeg
+        ffmpeg_bin = imageio_ffmpeg.get_ffmpeg_exe()
+        log("CONVERT", f"Transcoding to universal Windows-compatible MP4 (H.264)...")
+        convert_res = subprocess.run(
+            [
+                ffmpeg_bin, "-y",
+                "-i", str(target_video_path),
+                "-c:v", "libx264",
+                "-pix_fmt", "yuv420p",
+                "-preset", "fast",
+                "-crf", "22",
+                str(target_mp4_path)
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        if convert_res.returncode == 0 and target_mp4_path.exists():
+            mp4_generated = True
+            log("CONVERT", f"Universal MP4 successfully generated: {target_mp4_path}")
+    except Exception as e:
+        log("WARN", f"Could not transcode to MP4: {e}")
+
     # Probe duration with ffmpeg if available
     duration_str = "Unknown"
     ffmpeg_exe = Path("C:/Users/Vraj/AppData/Local/ms-playwright/ffmpeg-1011/ffmpeg-win64.exe")
@@ -216,9 +243,11 @@ def record_walkthrough():
     print("\n=======================================================", flush=True)
     print(" AegisFlow Walkthrough Video Recording COMPLETE! ", flush=True)
     print("=======================================================", flush=True)
-    print(f"File Path: {target_video_path}", flush=True)
-    print(f"File Size: {file_size_mb:.2f} MB ({file_size_bytes:,} bytes)", flush=True)
-    print(f"Duration:  {duration_str}", flush=True)
+    if mp4_generated:
+        mp4_size_mb = target_mp4_path.stat().st_size / (1024 * 1024)
+        print(f"MP4 File (Universal): {target_mp4_path} ({mp4_size_mb:.2f} MB)", flush=True)
+    print(f"WebM File:            {target_video_path} ({file_size_mb:.2f} MB)", flush=True)
+    print(f"Duration:             {duration_str}", flush=True)
     print("=======================================================\n", flush=True)
 
 if __name__ == "__main__":
